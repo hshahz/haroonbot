@@ -1,5 +1,5 @@
 import discord
-from env.env import api_key
+from
 
 
 class HaroonBot(discord.Client):
