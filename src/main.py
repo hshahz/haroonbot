@@ -39,6 +39,10 @@ class HaroonBot(discord.Client):
                 user_id = str(message.author.id)
                 today_date = self.get_today_date()
 
+                if score > 15000 or score < 0:
+                    await message.channel.send("Invalid score range")
+                    return
+
                 #check if score already in db
                 response = self.table.query(
                     KeyConditionExpression = boto3.dynamodb.conditions.Key('user_id').eq(user_id) & boto3.dynamodb.conditions.Key('date').eq(today_date)
@@ -89,10 +93,10 @@ class HaroonBot(discord.Client):
 
                 all_items = response.get('Items', [])
                 items = [item for item in all_items if item['date'] == today_date]
+                leaderboard = []
 
                 if items:
                     sorted_items = sorted(items, key=lambda x: x['score'], reverse=True)
-                    leaderboard = []
                     place = 1
                     for item in sorted_items:
                         user_id = item['user_id']
