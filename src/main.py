@@ -32,7 +32,7 @@ class HaroonBot(discord.Client):
 
 
 
-        print(f'Message from {message.author}: {message.content}')
+        # print(f'Message from {message.author}: {message.content}')
         if "!geo" in message.content: #DETECT SOME SOR OF INPUT LIKE !geo <your_score>
             try: #scrape for <score>
                 score = int(message.content.split("!geo")[1].strip())
