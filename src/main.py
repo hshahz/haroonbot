@@ -1,9 +1,7 @@
 import discord
 import boto3
+from boto3.dynamodb.conditions import Key, Attr
 from env.env import get_discord_api_key, get_table_name
-
-
-
 
 
 class HaroonBot(discord.Client):
@@ -27,8 +25,20 @@ class HaroonBot(discord.Client):
                 score = int(message.content.split("!geo")[1].strip())
                 await message.channel.send(f"Your score today was {score}")
             except(IndexError, ValueError): #if no score then say hey ur score is not a valid format
-                await message.channel.send("Invalid format. Use `!geo <score> with a numerical only score")
+                await message.channel.send("Invalid format. Use `!geo <score>` with a numerical only score")
                 return
+
+        if message.content.startswith("!db"):
+            user_id = message.content.split("!db")[1].strip()
+
+            try: #get something from the database
+                response = self.table.query(
+                    KeyConditionExpression = boto3.dynamodb.conditions.Key('user_id').eq(user_id)
+                )
+                items = response['Items']
+                await message.channel.send(items)
+            except Exception as e:
+                await message.channel.send(f"Error fetching data for {user_id}: {str(e)}")
 
 
         #leaderboard format:
