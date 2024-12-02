@@ -1,5 +1,6 @@
 import discord
-from env import api_key, aws_key
+from env.env import api_key
+
 
 class HaroonBot(discord.Client):
     async def on_ready(self):
