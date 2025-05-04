@@ -1,8 +1,10 @@
+import asyncio
 import discord
 import boto3
 from boto3.dynamodb.conditions import Key, Attr
 from env.env import get_discord_api_key, get_table_name
 from datetime import datetime, timedelta
+from dotenv import load_dotenv
 import pytz
 
 class HaroonBot(discord.Client):
@@ -122,7 +124,44 @@ class HaroonBot(discord.Client):
         # day 2, 12k , 123 k, 124
         # day3, 14, 56k, 12
         # user2, user3, user1
+        voice_channel_id =831302754772451376
 
+        if message.content == "!m":
+            try:
+                # Hardcoded voice channel ID or name
+                   # Replace with your voice channel ID
+                voice_channel = message.guild.get_channel(voice_channel_id)
+
+                if voice_channel and isinstance(voice_channel, discord.VoiceChannel):
+                    # Use asyncio.gather to run mute operations concurrently
+                    await asyncio.gather(*[
+                        member.edit(mute=True)
+                        for member in voice_channel.members
+                    ])
+                    await message.channel.send(f"All members in the voice channel '{voice_channel.name}' have been muted.")
+                else:
+                    await message.channel.send("Hardcoded voice channel not found.")
+            except Exception as e:
+                await message.channel.send(f"Error muting members: {str(e)}")
+
+        if message.content == "!u":
+            try:
+                # Hardcoded voice channel ID or name
+                
+                voice_channel = message.guild.get_channel(voice_channel_id)
+
+                if voice_channel and isinstance(voice_channel, discord.VoiceChannel):
+                    # Use asyncio.gather to run unmute operations concurrently
+                    await asyncio.gather(*[
+                        member.edit(mute=False)
+                        for member in voice_channel.members
+                    ])
+                    await message.channel.send(f"All members in the voice channel '{voice_channel.name}' have been unmuted.")
+                else:
+                    await message.channel.send("Hardcoded voice channel not found.")
+            except Exception as e:
+                await message.channel.send(f"Error unmuting members: {str(e)}")
+                
 intents = discord.Intents.default()
 intents.message_content = True
 intents.members = True
