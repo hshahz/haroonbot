@@ -6,8 +6,10 @@ from datetime import datetime, timedelta
 import pytz
 import os
 from dotenv import load_dotenv
+from keep_alive import keep_alive
 
 load_dotenv()
+keep_alive()
 
 class HaroonBot(discord.Client):
 
@@ -15,7 +17,13 @@ class HaroonBot(discord.Client):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         #Init DynamoDB
-        self.dynamodb = boto3.resource('dynamodb', region_name="us-east-2")
+        self.dynamodb = boto3.resource(
+            'dynamodb',
+            region_name="us-east-2",
+            aws_access_key_id=os.getenv('aws_access_key_id'),
+            aws_secret_access_key=os.getenv('aws_secret_access_key')
+
+        )
         self.table = self.dynamodb.Table(os.getenv('table_name'))
 
     def get_today_date(self):
