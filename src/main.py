@@ -2,18 +2,21 @@ import asyncio
 import discord
 import boto3
 from boto3.dynamodb.conditions import Key, Attr
-from env.env import get_discord_api_key, get_table_name
 from datetime import datetime, timedelta
-from dotenv import load_dotenv
 import pytz
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 class HaroonBot(discord.Client):
+
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         #Init DynamoDB
         self.dynamodb = boto3.resource('dynamodb', region_name="us-east-2")
-        self.table = self.dynamodb.Table(get_table_name())
+        self.table = self.dynamodb.Table(os.getenv('table_name'))
 
     def get_today_date(self):
         timezone = pytz.timezone("US/Central")
@@ -167,5 +170,5 @@ intents.message_content = True
 intents.members = True
 
 client = HaroonBot(intents=intents)
-client.run(get_discord_api_key())
+client.run(os.getenv('discord_api_key'))
 

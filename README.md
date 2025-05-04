@@ -5,11 +5,8 @@ discord bot that runs the haroon bot account
 - Pull repo locally
 
 ## specify discord api key
-- create "env" dir locally in src folder haroonbot
-- inside of env, create file named env.py
-- in env.py, label variable "api_key" for connecting to discord api and "table_name" from dynamoDB
-- put keys in env file
-- make getter functions inside the env.py so that your main.py can call them (very jank,sry)
+- create .env in the /src dir
+- in .env fill "api_key" for connecting to discord api and "table_name" from dynamoDB
 
 ## specify aws key
 - in `C:/Users/<you>/.aws/credentials`, add aws access key and private key

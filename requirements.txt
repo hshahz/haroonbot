@@ -1,5 +1,6 @@
-discord
-boto3
-datetime
-pytz
-dotenv
+discord~=2.3.2
+boto3~=1.35.71
+datetime~=5.5
+pytz~=2024.2
+discord.py~=2.4.0
+python-dotenv~=1.1.0

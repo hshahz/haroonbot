@@ -1,4 +1,4 @@
 .idea
 .venv
 src/env
-src/.env
+.env
