@@ -135,15 +135,36 @@ class HaroonBot(discord.Client):
         @self.tree.command(name="m", description="Mute all users in your voice channel")
         async def mute(interaction: discord.Interaction):
             try:
+                async def send_response(message: str):
+                    if interaction.response.is_done():
+                        await interaction.followup.send(message)
+                    else:
+                        await interaction.response.send_message(message)
+
                 voice_state = interaction.user.voice
                 if voice_state and voice_state.channel:
                     voice_channel = voice_state.channel
-                    await asyncio.gather(*[member.edit(mute=True) for member in voice_channel.members])
-                    await interaction.response.send_message(f"All members in '{voice_channel.name}' have been muted.")
+                    await interaction.response.defer(thinking=True)
+                    results = await asyncio.gather(
+                        *[member.edit(mute=True) for member in voice_channel.members],
+                        return_exceptions=True,
+                    )
+                    skipped = sum(isinstance(result, discord.NotFound) for result in results)
+                    errors = [
+                        result
+                        for result in results
+                        if isinstance(result, Exception) and not isinstance(result, discord.NotFound)
+                    ]
+                    if errors:
+                        raise errors[0]
+                    suffix = f" (skipped {skipped} unknown member(s))" if skipped else ""
+                    await send_response(
+                        f"All members in '{voice_channel.name}' have been muted.{suffix}"
+                    )
                 else:
-                    await interaction.response.send_message("You must be in a voice channel to use this command.")
+                    await send_response("You must be in a voice channel to use this command.")
             except Exception as e:
-                await interaction.response.send_message(f"Error muting members: {str(e)}")
+                await send_response(f"Error muting members: {str(e)}")
 
         # ==========================
         # /u Command
@@ -151,15 +172,36 @@ class HaroonBot(discord.Client):
         @self.tree.command(name="u", description="Unmute all users in your voice channel")
         async def unmute(interaction: discord.Interaction):
             try:
+                async def send_response(message: str):
+                    if interaction.response.is_done():
+                        await interaction.followup.send(message)
+                    else:
+                        await interaction.response.send_message(message)
+
                 voice_state = interaction.user.voice
                 if voice_state and voice_state.channel:
                     voice_channel = voice_state.channel
-                    await asyncio.gather(*[member.edit(mute=False) for member in voice_channel.members])
-                    await interaction.response.send_message(f"All members in '{voice_channel.name}' have been unmuted.")
+                    await interaction.response.defer(thinking=True)
+                    results = await asyncio.gather(
+                        *[member.edit(mute=False) for member in voice_channel.members],
+                        return_exceptions=True,
+                    )
+                    skipped = sum(isinstance(result, discord.NotFound) for result in results)
+                    errors = [
+                        result
+                        for result in results
+                        if isinstance(result, Exception) and not isinstance(result, discord.NotFound)
+                    ]
+                    if errors:
+                        raise errors[0]
+                    suffix = f" (skipped {skipped} unknown member(s))" if skipped else ""
+                    await send_response(
+                        f"All members in '{voice_channel.name}' have been unmuted.{suffix}"
+                    )
                 else:
-                    await interaction.response.send_message("You must be in a voice channel to use this command.")
+                    await send_response("You must be in a voice channel to use this command.")
             except Exception as e:
-                await interaction.response.send_message(f"Error unmuting members: {str(e)}")
+                await send_response(f"Error unmuting members: {str(e)}")
 
 # ==========================
 # Run the Bot
